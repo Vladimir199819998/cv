@@ -13,13 +13,18 @@ thresh = filters.threshold_otsu(sobel)
 sobel[sobel < thresh] = 0
 sobel[sobel >= thresh] = 1
 
+max_area = 0
+index = -1
 LB = measure.label(sobel)
+props = measure.regionprops(LB)
 
-for prop in measure.regionprops(LB):
-    if prop.area < 200 or prop.perimeter < 1000:
-        sobel[prop.coords[:,0], prop.coords[:,1]]
-    else:
-        print(prop.perimeter)
+for prop in enumerate(props):
+    if prop.convex_area > max_area:
+        index = i
+        max_area = prop.convex_area
+
+bb = props[index].bbox
+lama = img[bb[0]::bb[2], bb[1]::bb[3]]
 
 plt.subplot(111)
 plt.imshow(sobel)
